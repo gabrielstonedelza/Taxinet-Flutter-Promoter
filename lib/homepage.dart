@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:get/get.dart";
 import 'package:get_storage/get_storage.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:taxinet_promoter/views/mypassengers.dart';
 import 'package:taxinet_promoter/views/nointernetconnection.dart';
 import 'package:taxinet_promoter/views/register/registerview.dart';

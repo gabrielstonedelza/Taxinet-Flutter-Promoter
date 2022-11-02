@@ -3,8 +3,10 @@ import 'package:get/get.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:lottie/lottie.dart';
 import 'package:taxinet_promoter/views/login/newlogin.dart';
 
+import 'constants/app_colors.dart';
 import 'controllers/logincontroller.dart';
 import 'controllers/usercontroller.dart';
 import 'homepage.dart';
@@ -42,13 +44,13 @@ class _SplashScreenState extends State<SplashScreen> {
     loginController.getAllPromoters();
 
     if (hasToken && storage.read("userType") == "Promoter") {
-      Timer(const Duration(seconds: 7),
+      Timer(const Duration(seconds: 10),
               () {
             Get.offAll(() => const HomePage());
           }
       );
     } else {
-      Timer(const Duration(seconds: 7),
+      Timer(const Duration(seconds: 10),
               () => Get.offAll(() => const NewLogin()));
     }
   }
@@ -66,20 +68,50 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            child: TextLiquidFill(
-              loadDuration: const Duration(seconds: 5),
-              // waveDuration: const Duration(seconds: 4),
-              text: 'Taxinet',
-              waveColor: Colors.black,
-              boxBackgroundColor: Colors.amber,
-              textStyle: const TextStyle(
-                fontSize: 60.0,
-                fontWeight: FontWeight.bold,
+          // SizedBox(
+          //   child: TextLiquidFill(
+          //     loadDuration: const Duration(seconds: 5),
+          //     // waveDuration: const Duration(seconds: 4),
+          //     text: 'Taxinet',
+          //     waveColor: Colors.black,
+          //     boxBackgroundColor: Colors.amber,
+          //     textStyle: const TextStyle(
+          //       fontSize: 60.0,
+          //       fontWeight: FontWeight.bold,
+          //     ),
+          //     // boxHeight: 300.0,
+          //   ),
+          // ),
+          Lottie.asset('assets/json/promoter.json'),
+          Center(
+            child: SizedBox(
+              width: 250,
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize:40.0,
+                  fontWeight: FontWeight.bold,
+                  color: defaultTextColor2
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TypewriterAnimatedText(
+                      'Taxinet',
+                      speed: const Duration(milliseconds:300),
+                    ),
+                    TypewriterAnimatedText(
+                      'Promoter',
+                      speed: const Duration(milliseconds: 300),
+                    ),
+                  ],
+
+                  totalRepeatCount: 1,
+                  pause: const Duration(milliseconds: 100),
+                  displayFullTextOnTap: true,
+                  stopPauseOnTap: true,
+                ),
               ),
-              // boxHeight: 300.0,
             ),
-          ),
+          )
         ],
       ),
     );
