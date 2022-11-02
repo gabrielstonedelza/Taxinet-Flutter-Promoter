@@ -1,0 +1,106 @@
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+
+import '../constants/app_colors.dart';
+import '../homepage.dart';
+import '../views/login/newlogin.dart';
+
+class MyLoginController extends GetxController {
+  static MyLoginController get to => Get.find<MyLoginController>();
+  final storage = GetStorage();
+  var username = "";
+  final password = "";
+  String loggedInUserId = "";
+  String deToken = "";
+  bool isPosting = true;
+  late List allPromoters = [];
+  late List promotersUserNames = [];
+  bool isLoading = true;
+  bool hasErrors = false;
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    getAllPromoters();
+  }
+
+  Future<void> getAllPromoters() async {
+    try {
+      isLoading = true;
+      const completedRides = "https://taxinetghana.xyz/get_all_promoters/";
+      var link = Uri.parse(completedRides);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allPromoters.assignAll(jsonData);
+        for (var i in allPromoters) {
+          promotersUserNames.add(i['username']);
+        }
+        update();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  loginUser(String uname, String uPassword) async {
+    const loginUrl = "https://taxinetghana.xyz/auth/token/login/";
+    final myLogin = Uri.parse(loginUrl);
+
+    http.Response response = await http.post(myLogin,
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: {"username": uname, "password": uPassword});
+
+    if (response.statusCode == 200) {
+      final resBody = response.body;
+      var jsonData = jsonDecode(resBody);
+      var userToken = jsonData['auth_token'];
+      var userId = jsonData['id'];
+      loggedInUserId = userId.toString();
+      deToken = userToken;
+      storage.write("username", uname);
+      storage.write("userToken", userToken);
+      storage.write("userType", "Promoter");
+      storage.write("userid", userId);
+      username = uname;
+      hasErrors = false;
+      update();
+
+      if (promotersUserNames.contains(uname)) {
+        Timer(const Duration(seconds: 1),
+                () => Get.offAll(() => const HomePage()));
+      } else {
+        hasErrors = true;
+        storage.remove("username");
+        storage.remove("userToken");
+        storage.remove("userType");
+        storage.remove("userid");
+        Get.snackbar("Sorry 😢", "invalid details",
+            duration: const Duration(seconds: 5),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: defaultTextColor1);
+        Get.offAll(() => const NewLogin());
+      }
+    } else {
+      hasErrors = true;
+      Get.snackbar("Sorry 😢", "invalid details",
+          duration: const Duration(seconds: 5),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: defaultTextColor1);
+      return;
+    }
+  }
+}
