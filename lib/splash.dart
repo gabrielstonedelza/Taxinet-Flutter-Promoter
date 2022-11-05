@@ -68,20 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // SizedBox(
-          //   child: TextLiquidFill(
-          //     loadDuration: const Duration(seconds: 5),
-          //     // waveDuration: const Duration(seconds: 4),
-          //     text: 'Taxinet',
-          //     waveColor: Colors.black,
-          //     boxBackgroundColor: Colors.amber,
-          //     textStyle: const TextStyle(
-          //       fontSize: 60.0,
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //     // boxHeight: 300.0,
-          //   ),
-          // ),
+       
           Lottie.asset('assets/json/promoter.json'),
           Center(
             child: SizedBox(

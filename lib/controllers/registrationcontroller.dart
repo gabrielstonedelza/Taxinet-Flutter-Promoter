@@ -20,7 +20,7 @@ class MyRegistrationController extends GetxController{
       Get.offAll(()=> const HomePage());
     }
     else {
-      print(response.body);
+    
       Get.snackbar(
           "Error 😢", response.body.toString(),
           colorText: Colors.white,
