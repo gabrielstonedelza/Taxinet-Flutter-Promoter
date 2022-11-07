@@ -92,7 +92,7 @@ class _RegistrationState extends State<Registration> {
             icon:const Icon(Icons.arrow_back,color:defaultTextColor2)
         ),
       ),
-      body: hasInternet ? SingleChildScrollView(
+      body:SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -411,7 +411,7 @@ class _RegistrationState extends State<Registration> {
             )
           ],
         ),
-      ) : const NoInternetConnection(),
+      ),
     );
   }
 }
