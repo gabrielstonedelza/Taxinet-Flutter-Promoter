@@ -4,9 +4,11 @@ import 'package:get_storage/get_storage.dart';
 import "package:get/get.dart";
 import 'package:taxinet_promoter/splash.dart';
 
+import 'controllers/commissioncontroller.dart';
 import 'controllers/logincontroller.dart';
 import 'controllers/registrationcontroller.dart';
 import 'controllers/usercontroller.dart';
+import 'controllers/walletcontroller.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,8 @@ void main() async{
   Get.put(MyLoginController());
   Get.put(MyRegistrationController());
   Get.put(UserController());
+  Get.put(CommissionController());
+  Get.put(WalletController());
   runApp(const MyApp());
 }
 

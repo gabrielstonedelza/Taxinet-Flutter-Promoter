@@ -10,8 +10,6 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 
 import '../constants/app_colors.dart';
@@ -219,7 +217,6 @@ class UserController extends GetxController {
         var jsonData = jsonDecode(response.body);
         profileDetails = jsonData;
         promoterPassengers.assignAll(jsonData);
-
         update();
       }
       else{
@@ -236,6 +233,7 @@ class UserController extends GetxController {
       update();
     }
   }
+
 
   updateProfileDetails(String updateUserName, String updateEmail,String fullName, String updatePhone) async {
     const updateUrl = "https://taxinetghana.xyz/update_username/";
@@ -269,5 +267,6 @@ class UserController extends GetxController {
           colorText: defaultTextColor1);
     }
   }
+
 
 }

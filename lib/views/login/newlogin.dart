@@ -230,6 +230,11 @@ class _NewLoginState extends State<NewLogin> {
                       ),
                     ):   RawMaterialButton(
                       onPressed: () {
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
                         _startPosting();
                         if (_formKey.currentState!.validate()) {
                           if(username == ""){

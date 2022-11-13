@@ -3,8 +3,10 @@ import 'package:animate_do/animate_do.dart';
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import '../constants/app_colors.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../constants/app_colors.dart';
 import '../controllers/usercontroller.dart';
 
 
@@ -18,10 +20,60 @@ class MyPassengers extends StatefulWidget {
 class _MyPassengersState extends State<MyPassengers> {
   final UserController userController = Get.find();
   var items;
+  bool isBlocked = false;
+  late List allBlockedUsers = [];
+  late List blockedUsernames = [];
+  bool isLoading = true;
+  late Timer _timer;
+  List passengersRequests = [];
+  bool isSearching = false;
+  bool hasData = false;
+
+  fetchBlockedAgents()async{
+    const url = "https://taxinetghana.xyz/get_blocked_users/";
+    var myLink = Uri.parse(url);
+    final response = await http.get(myLink,);
+    if(response.statusCode == 200){
+      final codeUnits = response.body.codeUnits;
+      var jsonData = const Utf8Decoder().convert(codeUnits);
+      allBlockedUsers = json.decode(jsonData);
+      for(var i in allBlockedUsers){
+        if(!blockedUsernames.contains(i['get_username'])){
+          blockedUsernames.add(i['get_username']);
+        }
+      }
+
+    }
+
+    setState(() {
+      isLoading = false;
+      allBlockedUsers = allBlockedUsers;
+    });
+  }
+  Future<void> getPassengersRequest(String id)async {
+    final passengerRequestLink = "https://taxinetghana.xyz/get_passengers_requests/$id/";
+    var link = Uri.parse(passengerRequestLink);
+    http.Response res = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
+    if(res.statusCode == 200){
+      var jsonData = jsonDecode(res.body);
+      // print(jsonData.length);
+      passengersRequests = jsonDecode(res.body);
+      setState(() {
+        isSearching = false;
+        hasData = true;
+      });
+    }
+  }
 
   @override
   void initState(){
     super.initState();
+    fetchBlockedAgents();
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      fetchBlockedAgents();
+    });
     // print(controller.allDrivers);
   }
 
@@ -50,7 +102,7 @@ class _MyPassengersState extends State<MyPassengers> {
             )
           ],
         ),
-        body: GetBuilder<UserController>(builder:(controller){
+        body:  GetBuilder<UserController>(builder:(controller){
           return ListView.builder(
             itemCount: controller.promoterPassengers != null ? controller.promoterPassengers.length : 0,
             itemBuilder: (BuildContext context, int index) {
@@ -58,7 +110,7 @@ class _MyPassengersState extends State<MyPassengers> {
               return SlideInUp(
                 animate:true,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(5.0),
                   child: Card(
                     elevation: 12,
                     shape: RoundedRectangleBorder(
@@ -135,6 +187,24 @@ class _MyPassengersState extends State<MyPassengers> {
                       ),
                       title: Text(items['get_passengers_full_name']),
                       subtitle: Text(items['username']),
+                      trailing:  IconButton(
+                        onPressed: () async {
+                          Get.snackbar("Please wait", "getting data",
+                              duration: const Duration(seconds: 2),
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: Colors.grey,
+                              colorText: defaultTextColor1);
+                          getPassengersRequest(controller.promoterPassengers[index]['user'].toString());
+                          await Future.delayed(const Duration(seconds: 3));
+                          Get.snackbar("${controller.promoterPassengers[index]['username']}'s request", passengersRequests.length.toString(),
+                              snackStyle: SnackStyle.FLOATING,
+                              duration: const Duration(seconds: 2),
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.grey,
+                              colorText: defaultTextColor1);
+                        },
+                        icon: const Icon(Icons.access_time_outlined)
+                      ),
                     ),
                   ),
                 ),
